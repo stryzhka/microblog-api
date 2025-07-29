@@ -1,6 +1,9 @@
 package services
 
 import (
+	"errors"
+	"fmt"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"microblog-api/models"
 	"microblog-api/user"
@@ -48,4 +51,23 @@ func (s *UserService) Signin(username, password string) (string, error) {
 		return "", err
 	}
 	return util.GenerateToken(user.Id, user.Role, s.signingKey)
+}
+
+func (s *UserService) ParseToken(accessToken string) (string, error) {
+	token, err := jwt.ParseWithClaims(accessToken, &user.UserClaims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return s.signingKey, nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	if claims, ok := token.Claims.(*user.UserClaims); ok && token.Valid {
+		return claims.Id, nil
+	}
+
+	return "", errors.New("invalid token")
 }
