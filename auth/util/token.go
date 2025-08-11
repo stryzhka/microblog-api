@@ -2,12 +2,12 @@ package util
 
 import (
 	"github.com/golang-jwt/jwt/v5"
-	"microblog-api/user"
+	"microblog-api/auth"
 	"time"
 )
 
 func GenerateToken(id, role, signingKey string) (string, error) {
-	claims := user.UserClaims{
+	claims := auth.UserClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
