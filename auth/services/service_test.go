@@ -3,9 +3,9 @@ package services
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	testMock "microblog-api/auth/repositories/mock"
+	"microblog-api/auth/util"
 	"microblog-api/models"
-	testMock "microblog-api/user/repositories/mock"
-	"microblog-api/user/util"
 	"testing"
 	"time"
 )
@@ -13,16 +13,16 @@ import (
 func TestUserFlow(t *testing.T) {
 	repo := new(testMock.UserRepositoryMock)
 	s := NewUserService(repo, "salt", "key", time.Hour)
-	username := "user"
+	username := "auth"
 	password := "password"
 	user := &models.User{
 		Username: username,
 		Password: util.GeneratePasswordHash(password, s.passwordSalt),
-		Role:     "user",
+		Role:     "auth",
 	}
 	repo.On("Create", mock.MatchedBy(func(u *models.User) bool {
 		return u.Username == username && u.Password == util.GeneratePasswordHash(password, s.passwordSalt) &&
-			u.Role == "user" && len(u.Id) == 36
+			u.Role == "auth" && len(u.Id) == 36
 	})).Return(nil)
 	err := s.Signup(username, password)
 	assert.NoError(t, err)
