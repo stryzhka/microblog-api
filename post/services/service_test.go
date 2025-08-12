@@ -13,9 +13,9 @@ func TestPostFlow(t *testing.T) {
 	repo := testMock.PostRepositoryMock{}
 	s := NewPostService(&repo)
 	postId := uuid.New().String()
-	post := models.Post{
+	post := &models.Post{
 		Id:          "",
-		UserId:      "",
+		ProfileId:   "",
 		Likes:       0,
 		Content:     "666",
 		PicturePath: "",
@@ -24,7 +24,10 @@ func TestPostFlow(t *testing.T) {
 	repo.On("Create", mock.MatchedBy(func(p *models.Post) bool {
 		return len(p.Id) == 36 && p.Content == post.Content
 	})).Return(nil)
+	repo.On("GetById", postId).Return(post, nil)
 	err := s.Create("666", postId)
+	assert.NoError(t, err)
 
+	_, err = s.GetById(postId)
 	assert.NoError(t, err)
 }
