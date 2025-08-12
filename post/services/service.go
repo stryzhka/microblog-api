@@ -24,9 +24,9 @@ func (s *PostService) Create(content, userId string) error {
 		return err
 	}
 	post := &models.Post{
-		Id:      id.String(),
-		UserId:  userId,
-		Content: content,
+		Id:        id.String(),
+		ProfileId: userId,
+		Content:   content,
 	}
 	return s.repo.Create(post)
 }
