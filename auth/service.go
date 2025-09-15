@@ -11,4 +11,5 @@ type UserClaims struct {
 type Service interface {
 	Signup(username, password string) error
 	Signin(username, password string) (string, error)
+	ParseToken(accessToken string) (string, error)
 }
