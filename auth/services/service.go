@@ -8,26 +8,30 @@ import (
 	"microblog-api/auth"
 	"microblog-api/auth/util"
 	"microblog-api/models"
+	"microblog-api/profile"
 	"time"
 )
 
 type UserService struct {
-	repo         auth.Repository
-	passwordSalt string
-	signingKey   string
-	expire       time.Duration
+	repo           auth.Repository
+	profileService profile.Service
+	passwordSalt   string
+	signingKey     string
+	expire         time.Duration
 }
 
 func NewUserService(
 	repo auth.Repository,
+	profileService profile.Service,
 	passwordSalt string,
 	signingKey string,
 	expire time.Duration) *UserService {
 	return &UserService{
-		repo:         repo,
-		passwordSalt: passwordSalt,
-		signingKey:   signingKey,
-		expire:       expire,
+		repo:           repo,
+		profileService: profileService,
+		passwordSalt:   passwordSalt,
+		signingKey:     signingKey,
+		expire:         expire,
 	}
 }
 
@@ -42,6 +46,7 @@ func (s *UserService) Signup(username, password string) error {
 		Password: util.GeneratePasswordHash(password, s.passwordSalt),
 		Role:     "auth",
 	})
+	err = s.profileService.Create(id.String(), username, "")
 	return err
 }
 
