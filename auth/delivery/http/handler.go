@@ -25,10 +25,14 @@ func (h *Handler) Signup(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	if err := h.s.Signup(creds.Username, creds.Password); err != nil {
+	err := h.s.Signup(creds.Username, creds.Password)
+	if err == auth.ErrUserAlreadyExists {
+		c.JSON(http.StatusBadRequest, gin.H{"error": auth.ErrUserAlreadyExists.Error()})
+	} else if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+
 	c.Status(http.StatusOK)
 }
 
@@ -39,8 +43,10 @@ func (h *Handler) Signin(c *gin.Context) {
 		return
 	}
 	token, err := h.s.Signin(creds.Username, creds.Password)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+	if err == auth.ErrUserAlreadyExists {
+		c.JSON(http.StatusBadRequest, gin.H{"error": auth.ErrUserAlreadyExists.Error()})
+	} else if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"token": token})
