@@ -24,7 +24,7 @@ func (r *PostgresRepository) Get(username, password string) (*models.User, error
 	err := r.db.QueryRow(`
 		SELECT id, username, password, role 
 		FROM users 
-		WHERE username = $1, password = $2`, username, password).Scan(
+		WHERE username = $1 AND password = $2`, username, password).Scan(
 		&user.Id,
 		&user.Username,
 		&user.Password,
