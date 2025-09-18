@@ -46,12 +46,13 @@ func (s *UserService) Signup(username, password string) error {
 		Password: util.GeneratePasswordHash(password, s.passwordSalt),
 		Role:     "auth",
 	})
-	err = s.profileService.Create(id.String(), username, "")
+	//err = s.profileService.Create(id.String(), username, "")
+
 	return err
 }
 
 func (s *UserService) Signin(username, password string) (string, error) {
-	user, err := s.repo.Get(username, password)
+	user, err := s.repo.Get(username, util.GeneratePasswordHash(password, s.passwordSalt))
 	if err != nil {
 		return "", err
 	}
