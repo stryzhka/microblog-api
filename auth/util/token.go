@@ -3,6 +3,7 @@ package util
 import (
 	"github.com/golang-jwt/jwt/v5"
 	"microblog-api/auth"
+	"microblog-api/models"
 	"time"
 )
 
@@ -12,8 +13,12 @@ func GenerateToken(id, role, signingKey string) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
-		Id:   id,
-		Role: role,
+		User: &models.User{
+			Id:       id,
+			Role:     role,
+			Username: "",
+			Password: "",
+		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
