@@ -2,6 +2,7 @@ package services
 
 import (
 	"github.com/stretchr/testify/mock"
+	"microblog-api/models"
 )
 
 type UserServiceMock struct {
@@ -18,8 +19,8 @@ func (m *UserServiceMock) Signin(username, password string) (string, error) {
 	return args.Get(0).(string), args.Error(1)
 }
 
-func (m *UserServiceMock) ParseToken(accessToken string) (string, error) {
+func (m *UserServiceMock) ParseToken(accessToken string) (*models.User, error) {
 	args := m.Called(accessToken)
 
-	return args.Get(0).(string), args.Error(1)
+	return args.Get(0).(*models.User), args.Error(1)
 }

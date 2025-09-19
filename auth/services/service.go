@@ -1,7 +1,6 @@
 package services
 
 import (
-	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -59,7 +58,7 @@ func (s *UserService) Signin(username, password string) (string, error) {
 	return util.GenerateToken(user.Id, user.Role, s.signingKey)
 }
 
-func (s *UserService) ParseToken(accessToken string) (string, error) {
+func (s *UserService) ParseToken(accessToken string) (*models.User, error) {
 	token, err := jwt.ParseWithClaims(accessToken, &auth.UserClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -68,12 +67,12 @@ func (s *UserService) ParseToken(accessToken string) (string, error) {
 	})
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if claims, ok := token.Claims.(*auth.UserClaims); ok && token.Valid {
-		return claims.Id, nil
+		return claims.User, nil
 	}
 
-	return "", errors.New("invalid token")
+	return nil, auth.ErrInvalidToken
 }
