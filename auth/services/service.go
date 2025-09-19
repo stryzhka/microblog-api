@@ -63,10 +63,11 @@ func (s *UserService) ParseToken(accessToken string) (*models.User, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		return s.signingKey, nil
+		return []byte(s.signingKey), nil
 	})
 
 	if err != nil {
+
 		return nil, err
 	}
 
