@@ -50,3 +50,17 @@ func (r *PostgresRepository) GetById(id string) (*models.Profile, error) {
 	}
 	return profile, err
 }
+
+func (r *PostgresRepository) Update(id, userId string, newProfile *models.Profile) error {
+	_, err := r.db.Exec(`
+		update profiles set name = $1, status = $2, photo = $3 where user_id = $4
+		`, newProfile.Name, newProfile.Status, newProfile.Photo, userId)
+	if err != nil {
+		if e, ok := err.(*pq.Error); ok {
+			if e.Code == "23505" {
+				return profile2.ErrNameAlreadyExists
+			}
+		}
+	}
+	return err
+}

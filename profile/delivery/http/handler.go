@@ -2,7 +2,9 @@ package http
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"microblog-api/models"
 	"microblog-api/profile"
 	"net/http"
 )
@@ -39,4 +41,20 @@ func (h *Handler) GetById(c *gin.Context) {
 		Photo:  p.Photo,
 	}
 	c.JSON(http.StatusOK, profileData)
+}
+
+func (h *Handler) Update(c *gin.Context) {
+	creds := &models.Profile{}
+	if err := c.BindJSON(creds); err != nil {
+		fmt.Println("err", err.Error())
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	user := c.Value("user").(*models.User)
+	err := h.s.Update("", user.Id, creds)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.Status(http.StatusOK)
 }
