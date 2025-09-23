@@ -45,7 +45,9 @@ func (s *UserService) Signup(username, password string) error {
 		Password: util.GeneratePasswordHash(password, s.passwordSalt),
 		Role:     "auth",
 	})
-	//err = s.profileService.Create(id.String(), username, "")
+	if err == nil {
+		err = s.profileService.Create(id.String(), username, "")
+	}
 
 	return err
 }
