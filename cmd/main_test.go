@@ -97,7 +97,7 @@ func TestSigninGetProfile(t *testing.T) {
 	http2.RegisterHTTPEndpoints(api, profileService)
 
 	creds := &delivery.UserCredentials{
-		Username: "22",
+		Username: "222",
 		Password: "password",
 	}
 	body, err := json.Marshal(creds)

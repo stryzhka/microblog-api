@@ -69,8 +69,8 @@ func (s *UserService) ParseToken(accessToken string) (*models.User, error) {
 	})
 
 	if err != nil {
-
-		return nil, err
+		//fmt.Println(err.Error())
+		return nil, auth.ErrInvalidToken
 	}
 
 	if claims, ok := token.Claims.(*auth.UserClaims); ok && token.Valid {
