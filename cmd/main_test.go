@@ -124,7 +124,7 @@ func TestSigninGetProfile(t *testing.T) {
 	//w = httptest.NewRecorder()
 	//r.ServeHTTP(w, req)
 	//assert.Equal(t, http.StatusOK, w.Code)
-	req, _ = http.NewRequest("GET", "/api/profile/1b4bb6-22ae-4b77-a418-1f4a633a2b35", nil)
+	req, _ = http.NewRequest("GET", "/api/profile/103b4bb6-22ae-4b77-a418-1f4a633a2b35", nil)
 	//fmt.Println(tok.Token)
 	req.Header.Set("Authorization", "Bearer "+tok.Token)
 	w = httptest.NewRecorder()
