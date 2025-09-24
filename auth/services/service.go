@@ -45,7 +45,9 @@ func (s *UserService) Signup(username, password string) error {
 		Password: util.GeneratePasswordHash(password, s.passwordSalt),
 		Role:     "auth",
 	})
-	//err = s.profileService.Create(id.String(), username, "")
+	if err == nil {
+		err = s.profileService.Create(id.String(), username, "")
+	}
 
 	return err
 }
@@ -67,8 +69,8 @@ func (s *UserService) ParseToken(accessToken string) (*models.User, error) {
 	})
 
 	if err != nil {
-
-		return nil, err
+		//fmt.Println(err.Error())
+		return nil, auth.ErrInvalidToken
 	}
 
 	if claims, ok := token.Claims.(*auth.UserClaims); ok && token.Valid {

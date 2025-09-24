@@ -28,3 +28,7 @@ func (s *ProfileService) Create(userId string, name string, photo string) error 
 func (s *ProfileService) GetById(id string) (*models.Profile, error) {
 	return s.repo.GetById(id)
 }
+
+func (s *ProfileService) Update(id, userId string, newProfile *models.Profile) error {
+	return s.repo.Update(id, userId, newProfile)
+}
