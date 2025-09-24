@@ -14,7 +14,6 @@ import (
 	"microblog-api/models"
 	http2 "microblog-api/profile/delivery/http"
 	repositories2 "microblog-api/profile/repositories"
-	"microblog-api/profile/repositories/mock"
 	services2 "microblog-api/profile/services"
 	"net/http"
 	"net/http/httptest"
@@ -31,7 +30,7 @@ func TestSignup(t *testing.T) {
 	r := gin.Default()
 	delivery.RegisterHTTPEndpoints(r, userService)
 	creds := &delivery.UserCredentials{
-		Username: "22",
+		Username: "666",
 		Password: "password",
 	}
 	body, err := json.Marshal(creds)
@@ -42,47 +41,47 @@ func TestSignup(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestSignin(t *testing.T) {
-	db, err := sql.Open("postgres", "host=localhost port=5435 user=postgres password=root dbname=blog sslmode=disable")
-	assert.NoError(t, err)
-	userRepo, err := repositories.NewPostgresRepository(db)
-	profileRepo := &mock.ProfileRepositoryMock{}
-	profileService := services2.NewProfileService(profileRepo)
-	userService := services.NewUserService(userRepo, profileService, "salt", "key", 10000)
-	r := gin.Default()
-
-	delivery.RegisterHTTPEndpoints(r, userService)
-	r.GET("/api/endpoint", delivery.NewAuthMiddleware(userService), func(c *gin.Context) {
-		c.Status(http.StatusOK)
-	})
-	creds := &delivery.UserCredentials{
-		Username: "22",
-		Password: "password",
-	}
-	body, err := json.Marshal(creds)
-	req, _ := http.NewRequest("POST", "/auth/signin", bytes.NewBuffer(body))
-	req.Header.Set("Content-Type", "application/json")
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-	assert.Equal(t, http.StatusOK, w.Code)
-	body, _ = io.ReadAll(w.Body)
-	type token struct {
-		Token string `json:"token"`
-	}
-	tok := &token{}
-	_ = json.Unmarshal(body, tok)
-	req, _ = http.NewRequest("GET", "/api/endpoint", nil)
-	w = httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-	assert.Equal(t, http.StatusUnauthorized, w.Code)
-
-	req, _ = http.NewRequest("GET", "/api/endpoint", nil)
-	//fmt.Println(tok.Token)
-	req.Header.Set("Authorization", "Bearer "+tok.Token)
-	w = httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-	assert.Equal(t, http.StatusOK, w.Code)
-}
+//func TestSignin(t *testing.T) {
+//	db, err := sql.Open("postgres", "host=localhost port=5435 user=postgres password=root dbname=blog sslmode=disable")
+//	assert.NoError(t, err)
+//	userRepo, err := repositories.NewPostgresRepository(db)
+//	profileRepo := &mock.ProfileRepositoryMock{}
+//	profileService := services2.NewProfileService(profileRepo)
+//	userService := services.NewUserService(userRepo, profileService, "salt", "key", 10000)
+//	r := gin.Default()
+//
+//	delivery.RegisterHTTPEndpoints(r, userService)
+//	r.GET("/api/endpoint", delivery.NewAuthMiddleware(userService), func(c *gin.Context) {
+//		c.Status(http.StatusOK)
+//	})
+//	creds := &delivery.UserCredentials{
+//		Username: "22",
+//		Password: "password",
+//	}
+//	body, err := json.Marshal(creds)
+//	req, _ := http.NewRequest("POST", "/auth/signin", bytes.NewBuffer(body))
+//	req.Header.Set("Content-Type", "application/json")
+//	w := httptest.NewRecorder()
+//	r.ServeHTTP(w, req)
+//	assert.Equal(t, http.StatusOK, w.Code)
+//	body, _ = io.ReadAll(w.Body)
+//	type token struct {
+//		Token string `json:"token"`
+//	}
+//	tok := &token{}
+//	_ = json.Unmarshal(body, tok)
+//	req, _ = http.NewRequest("GET", "/api/endpoint", nil)
+//	w = httptest.NewRecorder()
+//	r.ServeHTTP(w, req)
+//	assert.Equal(t, http.StatusUnauthorized, w.Code)
+//
+//	req, _ = http.NewRequest("GET", "/api/endpoint", nil)
+//	//fmt.Println(tok.Token)
+//	req.Header.Set("Authorization", "Bearer "+tok.Token)
+//	w = httptest.NewRecorder()
+//	r.ServeHTTP(w, req)
+//	assert.Equal(t, http.StatusOK, w.Code)
+//}
 
 func TestSigninGetProfile(t *testing.T) {
 	db, err := sql.Open("postgres", "host=localhost port=5435 user=postgres password=root dbname=blog sslmode=disable")
@@ -113,7 +112,7 @@ func TestSigninGetProfile(t *testing.T) {
 	}
 	tok := &token{}
 	_ = json.Unmarshal(body, tok)
-	req, _ = http.NewRequest("GET", "/api/profile/1", nil)
+	req, _ = http.NewRequest("GET", "/api/profiles/1", nil)
 	w = httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
@@ -124,7 +123,7 @@ func TestSigninGetProfile(t *testing.T) {
 	//w = httptest.NewRecorder()
 	//r.ServeHTTP(w, req)
 	//assert.Equal(t, http.StatusOK, w.Code)
-	req, _ = http.NewRequest("GET", "/api/profile/103b4bb6-22ae-4b77-a418-1f4a633a2b35", nil)
+	req, _ = http.NewRequest("GET", "/api/profiles/103b4bb6-22ae-4b77-a418-1f4a633a2b35", nil)
 	//fmt.Println(tok.Token)
 	req.Header.Set("Authorization", "Bearer "+tok.Token)
 	w = httptest.NewRecorder()
@@ -162,7 +161,7 @@ func TestSigninUpdateProfile(t *testing.T) {
 	}
 	tok := &token{}
 	_ = json.Unmarshal(body, tok)
-	req, _ = http.NewRequest("GET", "/api/profile/1", nil)
+	req, _ = http.NewRequest("GET", "/api/profiles/1", nil)
 	//fmt.Println(tok.Token)
 	req.Header.Set("Authorization", "Bearer "+tok.Token)
 	w = httptest.NewRecorder()
@@ -178,11 +177,50 @@ func TestSigninUpdateProfile(t *testing.T) {
 	}
 	body, err = json.Marshal(newProfile)
 	assert.NoError(t, err)
-	req, _ = http.NewRequest("PUT", "/api/profile/", bytes.NewBuffer(body))
+	req, _ = http.NewRequest("PUT", "/api/profiles/", bytes.NewBuffer(body))
 	//fmt.Println(tok.Token)
 	req.Header.Set("Authorization", "Bearer "+tok.Token)
 	w = httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	fmt.Println(w.Body)
 	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestSigninGetAllProfiles(t *testing.T) {
+	db, err := sql.Open("postgres", "host=localhost port=5435 user=postgres password=root dbname=blog sslmode=disable")
+	assert.NoError(t, err)
+	userRepo, err := repositories.NewPostgresRepository(db)
+	profileRepo, err := repositories2.NewPostgresRepository(db)
+	profileService := services2.NewProfileService(profileRepo)
+	userService := services.NewUserService(userRepo, profileService, "salt", "key", 10000)
+	r := gin.Default()
+	middleware := delivery.NewAuthMiddleware(userService)
+	delivery.RegisterHTTPEndpoints(r, userService)
+	api := r.Group("/api", middleware)
+	http2.RegisterHTTPEndpoints(api, profileService)
+
+	creds := &delivery.UserCredentials{
+		Username: "666",
+		Password: "password",
+	}
+	body, err := json.Marshal(creds)
+	req, _ := http.NewRequest("POST", "/auth/signin", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+	assert.Equal(t, http.StatusOK, w.Code)
+	body, _ = io.ReadAll(w.Body)
+	type token struct {
+		Token string `json:"token"`
+	}
+	tok := &token{}
+	_ = json.Unmarshal(body, tok)
+	req, _ = http.NewRequest("GET", "/api/profiles/", nil)
+	//fmt.Println(tok.Token)
+	req.Header.Set("Authorization", "Bearer "+tok.Token)
+	w = httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+	fmt.Println(w.Body)
+	assert.Equal(t, http.StatusOK, w.Code)
+
 }

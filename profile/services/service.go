@@ -29,6 +29,10 @@ func (s *ProfileService) GetById(id string) (*models.Profile, error) {
 	return s.repo.GetById(id)
 }
 
+func (s *ProfileService) GetAll() []models.Profile {
+	return s.repo.GetAll()
+}
+
 func (s *ProfileService) Update(id, userId string, newProfile *models.Profile) error {
 	return s.repo.Update(id, userId, newProfile)
 }

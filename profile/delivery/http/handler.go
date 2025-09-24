@@ -43,6 +43,24 @@ func (h *Handler) GetById(c *gin.Context) {
 	c.JSON(http.StatusOK, profileData)
 }
 
+func (h *Handler) GetAll(c *gin.Context) {
+	p := h.s.GetAll()
+	var profileData []ProfileData
+	if len(p) == 0 {
+		c.JSON(http.StatusOK, nil)
+		return
+	}
+	for _, profile := range p {
+		temp := &ProfileData{
+			Name:   profile.Name,
+			Status: profile.Status,
+			Photo:  profile.Photo,
+		}
+		profileData = append(profileData, *temp)
+	}
+	c.JSON(http.StatusOK, profileData)
+}
+
 func (h *Handler) Update(c *gin.Context) {
 	creds := &models.Profile{}
 	if err := c.BindJSON(creds); err != nil {

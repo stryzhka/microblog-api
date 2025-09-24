@@ -51,6 +51,25 @@ func (r *PostgresRepository) GetById(id string) (*models.Profile, error) {
 	return profile, err
 }
 
+func (r *PostgresRepository) GetAll() []models.Profile {
+	var profiles []models.Profile
+	rows, err := r.db.Query(`select user_id, name, status, photo from profiles`)
+	if err != nil {
+		fmt.Println(err.Error())
+		return profiles
+	}
+	for rows.Next() {
+		profile := &models.Profile{}
+		err := rows.Scan(&profile.UserId, &profile.Name, &profile.Status, &profile.Photo)
+		if err != nil {
+			fmt.Println(err.Error())
+			return profiles
+		}
+		profiles = append(profiles, *profile)
+	}
+	return profiles
+}
+
 func (r *PostgresRepository) Update(id, userId string, newProfile *models.Profile) error {
 	_, err := r.db.Exec(`
 		update profiles set name = $1, status = $2, photo = $3 where user_id = $4
