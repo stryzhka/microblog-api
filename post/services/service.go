@@ -37,6 +37,7 @@ func (s *PostService) Create(content, userId string) error {
 		ProfileId:   userId,
 		Content:     content,
 		DateCreated: time.Now().Format(time.RFC3339),
+		Likes:       0,
 	}
 	return s.repo.Create(post)
 }

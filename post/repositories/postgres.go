@@ -27,11 +27,12 @@ func (r *PostgresRepository) Create(post *models.Post) error {
 
 func (r *PostgresRepository) GetById(id string) (*models.Post, error) {
 	post := &models.Post{}
-	err := r.db.QueryRow(`select id, profile_id, content, date from posts where id = $1`, id).Scan(
+	err := r.db.QueryRow(`select id, profile_id, content, date, likes_count from posts where id = $1`, id).Scan(
 		&post.Id,
 		&post.ProfileId,
 		&post.Content,
 		&post.DateCreated,
+		&post.Likes,
 	)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -44,14 +45,14 @@ func (r *PostgresRepository) GetById(id string) (*models.Post, error) {
 
 func (r *PostgresRepository) GetByUserId(userId string) []models.Post {
 	var posts []models.Post
-	rows, err := r.db.Query(`select  id, profile_id, content, date from posts where profile_id = $1`, userId)
+	rows, err := r.db.Query(`select  id, profile_id, content, date, likes_count from posts where profile_id = $1`, userId)
 	if err != nil {
 		fmt.Println(err.Error())
 		return posts
 	}
 	for rows.Next() {
 		post := &models.Post{}
-		err := rows.Scan(&post.Id, &post.ProfileId, &post.Content, &post.DateCreated)
+		err := rows.Scan(&post.Id, &post.ProfileId, &post.Content, &post.DateCreated, &post.Likes)
 		if err != nil {
 			fmt.Println(err.Error())
 			return posts
@@ -90,7 +91,20 @@ func (r *PostgresRepository) LikePost(like *models.Like) error {
 			}
 		}
 	}
-	return err
+	_, err = r.db.Exec(`
+		UPDATE posts
+		SET likes_count = (
+			SELECT COUNT(*)
+			FROM likes
+			WHERE likes.post_id = posts.id
+		)
+		WHERE id = $1;
+
+	`, like.PostId)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *PostgresRepository) DislikePost(like *models.Like) error {
@@ -111,6 +125,19 @@ func (r *PostgresRepository) DislikePost(like *models.Like) error {
 	}
 	if found == 0 {
 		return post2.ErrNotLiked
+	}
+	_, err = r.db.Exec(`
+		UPDATE posts
+		SET likes_count = (
+			SELECT COUNT(*)
+			FROM likes
+			WHERE likes.post_id = posts.id
+		)
+		WHERE id = $1;
+
+	`, like.PostId)
+	if err != nil {
+		return err
 	}
 	return nil
 }

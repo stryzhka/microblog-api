@@ -378,7 +378,7 @@ func TestSigninLikePost(t *testing.T) {
 	_ = json.Unmarshal(body, tok)
 	//postData := http3.PostData{Content: "dhufh89dfh89fdh98"}
 	//body, _ = json.Marshal(postData)
-	req, _ = http.NewRequest("DELETE", "/api/posts/b8ad9784-7171-41cb-afd0-0c560b52430", nil)
+	req, _ = http.NewRequest("DELETE", "/api/posts/4284cd73-9824-4ffe-93a7-af303fba8ca3", nil)
 	//fmt.Println(tok.Token)
 	req.Header.Set("Authorization", "Bearer "+tok.Token)
 	w = httptest.NewRecorder()
