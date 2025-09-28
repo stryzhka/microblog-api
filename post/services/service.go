@@ -40,3 +40,19 @@ func (s *PostService) Create(content, userId string) error {
 	}
 	return s.repo.Create(post)
 }
+
+func (s *PostService) LikePost(postId, userId string) error {
+	like := &models.Like{
+		ProfileId: userId,
+		PostId:    postId,
+	}
+	return s.repo.LikePost(like)
+}
+
+func (s *PostService) DislikePost(postId, userId string) error {
+	like := &models.Like{
+		ProfileId: userId,
+		PostId:    postId,
+	}
+	return s.repo.DislikePost(like)
+}

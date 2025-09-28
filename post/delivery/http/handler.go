@@ -39,6 +39,7 @@ func (h *Handler) GetById(c *gin.Context) {
 	post, err := h.s.GetById(id)
 	if errors.Is(err, post2.ErrPostNotFound) {
 		c.JSON(http.StatusOK, gin.H{})
+		return
 	} else if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
@@ -64,5 +65,27 @@ func (h *Handler) Delete(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, nil)
+	c.Status(http.StatusOK)
+}
+
+func (h *Handler) LikePost(c *gin.Context) {
+	userId := c.Value("user").(*models.User).Id
+	postId := c.Param("postId")
+	err := h.s.LikePost(postId, userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.Status(http.StatusOK)
+}
+
+func (h *Handler) DislikePost(c *gin.Context) {
+	userId := c.Value("user").(*models.User).Id
+	postId := c.Param("postId")
+	err := h.s.DislikePost(postId, userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.Status(http.StatusOK)
 }

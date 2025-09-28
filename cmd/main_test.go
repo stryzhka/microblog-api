@@ -33,7 +33,7 @@ func TestSignup(t *testing.T) {
 	r := gin.Default()
 	delivery.RegisterHTTPEndpoints(r, userService)
 	creds := &delivery.UserCredentials{
-		Username: "666",
+		Username: "888",
 		Password: "password",
 	}
 	body, err := json.Marshal(creds)
@@ -100,7 +100,7 @@ func TestSigninGetProfile(t *testing.T) {
 	http2.RegisterHTTPEndpoints(api, profileService)
 
 	creds := &delivery.UserCredentials{
-		Username: "pidoras",
+		Username: "666",
 		Password: "password",
 	}
 	body, err := json.Marshal(creds)
@@ -149,7 +149,7 @@ func TestSigninUpdateProfile(t *testing.T) {
 	http2.RegisterHTTPEndpoints(api, profileService)
 
 	creds := &delivery.UserCredentials{
-		Username: "pidoras",
+		Username: "777",
 		Password: "password",
 	}
 	body, err := json.Marshal(creds)
@@ -279,7 +279,7 @@ func TestGetPost(t *testing.T) {
 	r := gin.Default()
 	api := r.Group("/api")
 	http3.RegisterHTTPEndpoints(api, postService)
-	req, _ := http.NewRequest("GET", "/api/posts/d6e1800b-2c2a-4793-9e15-156d69b3715f", nil)
+	req, _ := http.NewRequest("GET", "/api/posts/4284cd73-9824-4ffe-93a7-af303fba8ca3", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	fmt.Println(w.Body)
@@ -336,6 +336,49 @@ func TestSigninDeletePost(t *testing.T) {
 	//postData := http3.PostData{Content: "dhufh89dfh89fdh98"}
 	//body, _ = json.Marshal(postData)
 	req, _ = http.NewRequest("DELETE", "/api/posts/profile/b54b84ef-dd66-42af-8acd-52b7802ff14c", nil)
+	//fmt.Println(tok.Token)
+	req.Header.Set("Authorization", "Bearer "+tok.Token)
+	w = httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+	fmt.Println(w.Body)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestSigninLikePost(t *testing.T) {
+	db, err := sql.Open("postgres", "host=localhost port=5435 user=postgres password=root dbname=blog sslmode=disable")
+	assert.NoError(t, err)
+	userRepo, err := repositories.NewPostgresRepository(db)
+	profileRepo, err := repositories2.NewPostgresRepository(db)
+	profileService := services2.NewProfileService(profileRepo)
+	postRepo := repositories3.NewPostgresRepository(db)
+	postService := services3.NewPostService(postRepo)
+	userService := services.NewUserService(userRepo, profileService, "salt", "key", 10000)
+	r := gin.Default()
+	middleware := delivery.NewAuthMiddleware(userService)
+
+	delivery.RegisterHTTPEndpoints(r, userService)
+	api := r.Group("/api", middleware)
+	http3.RegisterHTTPEndpoints(api, postService)
+
+	creds := &delivery.UserCredentials{
+		Username: "666",
+		Password: "password",
+	}
+	body, err := json.Marshal(creds)
+	req, _ := http.NewRequest("POST", "/auth/signin", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+	assert.Equal(t, http.StatusOK, w.Code)
+	body, _ = io.ReadAll(w.Body)
+	type token struct {
+		Token string `json:"token"`
+	}
+	tok := &token{}
+	_ = json.Unmarshal(body, tok)
+	//postData := http3.PostData{Content: "dhufh89dfh89fdh98"}
+	//body, _ = json.Marshal(postData)
+	req, _ = http.NewRequest("DELETE", "/api/posts/b8ad9784-7171-41cb-afd0-0c560b52430", nil)
 	//fmt.Println(tok.Token)
 	req.Header.Set("Authorization", "Bearer "+tok.Token)
 	w = httptest.NewRecorder()
