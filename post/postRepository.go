@@ -3,8 +3,10 @@ package post
 import "microblog-api/models"
 
 type Repository interface {
-	//List() []models.Post
-	Create(post *models.Post) error
+	GetByUserId(userId string) []models.Post
 	GetById(id string) (*models.Post, error)
-	//Delete(id string) error
+	Delete(userId, id string) error
+	Create(post *models.Post) error
+	LikePost(like *models.Like) error
+	DislikePost(like *models.Like) error
 }

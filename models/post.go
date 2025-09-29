@@ -8,3 +8,8 @@ type Post struct {
 	PicturePath string
 	DateCreated string
 }
+
+type Like struct {
+	ProfileId string
+	PostId    string
+}
