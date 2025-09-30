@@ -18,7 +18,7 @@ func NewHandler(s profile.Service) *Handler {
 }
 
 type ProfileData struct {
-	//UserId string
+	UserId string `json:"userId"`
 	Name   string `json:"name"`
 	Status string `json:"status"`
 	Photo  string `json:"photo"`
@@ -35,7 +35,7 @@ func (h *Handler) GetById(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
 	profileData := &ProfileData{
-		//UserId: p.UserId,
+		UserId: p.UserId,
 		Name:   p.Name,
 		Status: p.Status,
 		Photo:  p.Photo,
@@ -52,6 +52,7 @@ func (h *Handler) GetAll(c *gin.Context) {
 	}
 	for _, profile := range p {
 		temp := &ProfileData{
+			UserId: profile.UserId,
 			Name:   profile.Name,
 			Status: profile.Status,
 			Photo:  profile.Photo,

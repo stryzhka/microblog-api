@@ -126,7 +126,7 @@ func TestSigninGetProfile(t *testing.T) {
 	//w = httptest.NewRecorder()
 	//r.ServeHTTP(w, req)
 	//assert.Equal(t, http.StatusOK, w.Code)
-	req, _ = http.NewRequest("GET", "/api/profiles/103b4bb6-22ae-4b77-a418-1f4a633a2b35", nil)
+	req, _ = http.NewRequest("GET", "/api/profile/2c5c18eb-27b6-4ea1-8fbb-7ca93748cff9", nil)
 	//fmt.Println(tok.Token)
 	req.Header.Set("Authorization", "Bearer "+tok.Token)
 	w = httptest.NewRecorder()
@@ -218,7 +218,7 @@ func TestSigninGetAllProfiles(t *testing.T) {
 	}
 	tok := &token{}
 	_ = json.Unmarshal(body, tok)
-	req, _ = http.NewRequest("GET", "/api/profiles/", nil)
+	req, _ = http.NewRequest("GET", "/api/profile/", nil)
 	//fmt.Println(tok.Token)
 	req.Header.Set("Authorization", "Bearer "+tok.Token)
 	w = httptest.NewRecorder()

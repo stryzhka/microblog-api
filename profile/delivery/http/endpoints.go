@@ -8,11 +8,11 @@ import (
 
 func RegisterHTTPEndpoints(router *gin.RouterGroup, s profile.Service) {
 	h := NewHandler(s)
-	profileEndpoints := router.Group("/profiles")
+	profileEndpoints := router.Group("/profile")
 	{
 		profileEndpoints.GET("/:id", h.GetById)
 		profileEndpoints.PUT("/", h.Update)
 		profileEndpoints.GET("/", h.GetAll)
-		//authEndpoints.POST("/signin", h.Signin)
+
 	}
 }
