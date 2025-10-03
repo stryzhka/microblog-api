@@ -8,6 +8,8 @@ import (
 	"microblog-api/auth/util"
 	"microblog-api/models"
 	"microblog-api/profile"
+	"regexp"
+	"strings"
 	"time"
 )
 
@@ -35,6 +37,10 @@ func NewUserService(
 }
 
 func (s *UserService) Signup(username, password string) error {
+	valid := regexp.MustCompile("^[a-zA-Z0-9]+$")
+	if !valid.MatchString(username) || strings.TrimSpace(password) == "" {
+		return auth.ErrValidation
+	}
 	id, err := uuid.NewRandom()
 	if err != nil {
 		return err

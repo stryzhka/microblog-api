@@ -2,12 +2,9 @@ package config
 
 import (
 	"github.com/joho/godotenv"
-	"log"
 )
 
-func Init() {
+func Init() error {
 	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal(".env loading error")
-	}
+	return err
 }

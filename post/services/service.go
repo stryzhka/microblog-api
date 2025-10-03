@@ -2,8 +2,10 @@ package services
 
 import (
 	"github.com/google/uuid"
+	"microblog-api/auth"
 	"microblog-api/models"
 	"microblog-api/post"
+	"strings"
 	"time"
 )
 
@@ -29,6 +31,9 @@ func (s *PostService) GetByUserId(userId string) []models.Post {
 
 func (s *PostService) Create(content, userId string) error {
 	id, err := uuid.NewRandom()
+	if strings.TrimSpace(content) == "" {
+		return auth.ErrValidation
+	}
 	if err != nil {
 		return err
 	}

@@ -28,8 +28,11 @@ func (h *Handler) Signup(c *gin.Context) {
 	err := h.s.Signup(creds.Username, creds.Password)
 	if err == auth.ErrUserAlreadyExists {
 		c.JSON(http.StatusBadRequest, gin.H{"error": auth.ErrUserAlreadyExists.Error()})
+	} else if err == auth.ErrValidation {
+		c.AbortWithStatus(http.StatusBadRequest)
 	} else if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
+		//c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 

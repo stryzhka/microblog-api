@@ -1,18 +1,21 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
 	_ "github.com/lib/pq"
-	"microblog-api/auth/repositories"
+	"log"
+	"microblog-api/config"
+	"microblog-api/server"
+	"os"
 )
 
 func main() {
-	db, err := sql.Open("postgres", "host=localhost port=5435 user=postgres password=root dbname=blog sslmode=disable")
-
-	repo, err := repositories.NewPostgresRepository(db)
+	err := config.Init()
 	if err != nil {
-		panic(err)
+		log.Fatalf("Config error: %s", err.Error())
 	}
-	fmt.Println(repo.Get("1", "1"))
+
+	app := server.NewApp()
+	if err = app.Run(os.Getenv("port")); err != nil {
+		log.Fatalf("Server error: %s", err.Error())
+	}
 }

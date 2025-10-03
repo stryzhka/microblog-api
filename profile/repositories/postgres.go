@@ -12,8 +12,8 @@ type PostgresRepository struct {
 	db *sql.DB
 }
 
-func NewPostgresRepository(db *sql.DB) (*PostgresRepository, error) {
-	return &PostgresRepository{db: db}, nil
+func NewPostgresRepository(db *sql.DB) *PostgresRepository {
+	return &PostgresRepository{db: db}
 }
 
 func (r *PostgresRepository) Create(profile *models.Profile) error {

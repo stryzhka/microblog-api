@@ -2,8 +2,10 @@ package services
 
 import (
 	"github.com/google/uuid"
+	"microblog-api/auth"
 	"microblog-api/models"
 	"microblog-api/profile"
+	"strings"
 )
 
 type ProfileService struct {
@@ -15,6 +17,7 @@ func NewProfileService(repo profile.Repository) *ProfileService {
 }
 
 func (s *ProfileService) Create(userId string, name string, photo string) error {
+
 	profile := &models.Profile{
 		Id:     uuid.New().String(),
 		UserId: userId,
@@ -34,5 +37,8 @@ func (s *ProfileService) GetAll() []models.Profile {
 }
 
 func (s *ProfileService) Update(id, userId string, newProfile *models.Profile) error {
+	if strings.TrimSpace(newProfile.Name) == "" {
+		return auth.ErrValidation
+	}
 	return s.repo.Update(id, userId, newProfile)
 }
