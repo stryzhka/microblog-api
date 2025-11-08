@@ -6,9 +6,8 @@ CREATE TABLE IF NOT EXISTS public.users
     password text COLLATE pg_catalog."default",
     CONSTRAINT users_pkey PRIMARY KEY (id),
     CONSTRAINT "1" UNIQUE (username)
-)
+);
 
-    TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.users
     OWNER to postgres;
@@ -26,9 +25,9 @@ CREATE TABLE IF NOT EXISTS public.profiles
     photo text COLLATE pg_catalog."default",
     CONSTRAINT id PRIMARY KEY (id),
     CONSTRAINT unique_profile UNIQUE (name)
-)
+);
 
-    TABLESPACE pg_default;
+
 
 ALTER TABLE IF EXISTS public.profiles
     OWNER to postgres;
@@ -45,9 +44,9 @@ CREATE TABLE IF NOT EXISTS public.posts
     date timestamp with time zone NOT NULL,
     likes_count integer,
     CONSTRAINT posts_pkey PRIMARY KEY (id)
-)
+);
 
-    TABLESPACE pg_default;
+
 
 ALTER TABLE IF EXISTS public.posts
     OWNER to postgres;
@@ -61,9 +60,8 @@ CREATE TABLE IF NOT EXISTS public.likes
     profile_id text COLLATE pg_catalog."default" NOT NULL,
     post_id text COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT unique_like UNIQUE (profile_id, post_id)
-)
+);
 
-    TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.likes
     OWNER to postgres;
