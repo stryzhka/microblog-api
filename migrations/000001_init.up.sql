@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS public.posts
     content text COLLATE pg_catalog."default" NOT NULL,
     date timestamp with time zone NOT NULL,
     likes_count integer,
+    picture_path text COLLATE pg_catalog."default",
     CONSTRAINT posts_pkey PRIMARY KEY (id)
 );
 

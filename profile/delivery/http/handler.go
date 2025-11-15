@@ -25,7 +25,6 @@ type ProfileData struct {
 }
 
 func (h *Handler) GetById(c *gin.Context) {
-	//
 	id := c.Param("id")
 	p, err := h.s.GetById(id)
 	if errors.Is(err, profile.ErrProfileNotFound) {

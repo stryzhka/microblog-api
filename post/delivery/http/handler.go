@@ -1,12 +1,16 @@
 package http
 
 import (
+	"bytes"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"io"
 	"microblog-api/models"
 	"microblog-api/post"
 	post2 "microblog-api/post"
+	"microblog-api/storage"
 	"net/http"
+	"strings"
 )
 
 type Handler struct {
@@ -22,11 +26,37 @@ type PostData struct {
 }
 
 func (h *Handler) Create(c *gin.Context) {
-	postData := &PostData{}
-	if err := c.BindJSON(postData); err != nil {
-		c.AbortWithStatus(http.StatusBadRequest)
+	content := c.PostForm("content")
+	if content == "" || strings.TrimSpace(content) == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "field 'content' is required"})
+		return
 	}
-	err := h.s.Create(postData.Content, c.Value("user").(*models.User).Id)
+	postData := &PostData{Content: content}
+	photoData := storage.FileData{
+		File:        nil,
+		Size:        0,
+		ContentType: "",
+	}
+	photo, err := c.FormFile("photo")
+	if err == nil {
+		file, err := photo.Open()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		fileBytes, err := io.ReadAll(file)
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		defer file.Close()
+		photoData.File = bytes.NewReader(fileBytes)
+		photoData.Size = int64(len(fileBytes))
+		photoData.ContentType = photo.Header.Get("Content-Type")
+	}
+	err = h.s.Create(c.Request.Context(), postData.Content, c.Value("user").(*models.User).Id, photoData)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

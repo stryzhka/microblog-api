@@ -17,7 +17,7 @@ func NewPostgresRepository(db *sql.DB) *PostgresRepository {
 }
 
 func (r *PostgresRepository) Create(post *models.Post) error {
-	_, err := r.db.Exec(`insert into posts (id, profile_id, content, date) values ($1, $2, $3, $4)`, post.Id, post.ProfileId, post.Content, post.DateCreated)
+	_, err := r.db.Exec(`insert into posts (id, profile_id, content, date, picture_path) values ($1, $2, $3, $4, $5)`, post.Id, post.ProfileId, post.Content, post.DateCreated, post.PicturePath)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
