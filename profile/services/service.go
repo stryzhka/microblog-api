@@ -1,29 +1,36 @@
 package services
 
 import (
+	"context"
+	"fmt"
 	"github.com/google/uuid"
 	"microblog-api/auth"
 	"microblog-api/models"
 	"microblog-api/profile"
+	"microblog-api/storage"
 	"strings"
+	"time"
 )
 
 type ProfileService struct {
-	repo profile.Repository
+	repo    profile.Repository
+	storage storage.FileStorage
 }
 
-func NewProfileService(repo profile.Repository) *ProfileService {
-	return &ProfileService{repo: repo}
+func NewProfileService(repo profile.Repository, storage storage.FileStorage) *ProfileService {
+	return &ProfileService{
+		repo:    repo,
+		storage: storage,
+	}
 }
 
-func (s *ProfileService) Create(userId string, name string, photo string) error {
+func (s *ProfileService) Create(userId string, name string) error {
 
 	profile := &models.Profile{
 		Id:     uuid.New().String(),
 		UserId: userId,
 		Name:   name,
 		Status: "",
-		Photo:  "",
 	}
 	return s.repo.Create(profile)
 }
@@ -36,9 +43,22 @@ func (s *ProfileService) GetAll() []models.Profile {
 	return s.repo.GetAll()
 }
 
-func (s *ProfileService) Update(id, userId string, newProfile *models.Profile) error {
+func (s *ProfileService) Update(ctx context.Context, id, userId string, newProfile *models.Profile, photoData storage.FileData) error {
 	if strings.TrimSpace(newProfile.Name) == "" {
 		return auth.ErrValidation
 	}
+
+	photoPath := ""
+	if photoData.File != nil {
+		filename := fmt.Sprintf("profiles/%d_%s", time.Now().UnixNano(), userId)
+		err := s.storage.UploadFile(ctx, photoData.File, photoData.ContentType, filename, photoData.Size)
+		photoPath, err = s.storage.GetFileURL(ctx, filename)
+		if err != nil {
+			return fmt.Errorf("failed to upload photo: %w", err)
+		}
+	}
+
+	newProfile.Photo = photoPath
+
 	return s.repo.Update(id, userId, newProfile)
 }

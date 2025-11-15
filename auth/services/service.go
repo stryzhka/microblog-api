@@ -52,7 +52,7 @@ func (s *UserService) Signup(username, password string) error {
 		Role:     "auth",
 	})
 	if err == nil {
-		err = s.profileService.Create(id.String(), username, "")
+		err = s.profileService.Create(id.String(), username)
 	}
 
 	return err

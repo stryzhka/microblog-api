@@ -47,7 +47,6 @@ func (s *PostService) Create(ctx context.Context, content, userId string, photoD
 	photoPath := ""
 	if photoData.File != nil {
 		filename := fmt.Sprintf("posts/%d_%s", time.Now().UnixNano(), userId)
-
 		err := s.storage.UploadFile(ctx, photoData.File, photoData.ContentType, filename, photoData.Size)
 		photoPath, err = s.storage.GetFileURL(ctx, filename)
 		if err != nil {

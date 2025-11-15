@@ -1,11 +1,13 @@
 package http
 
 import (
+	"bytes"
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"io"
 	"microblog-api/models"
 	"microblog-api/profile"
+	"microblog-api/storage"
 	"net/http"
 )
 
@@ -62,14 +64,41 @@ func (h *Handler) GetAll(c *gin.Context) {
 }
 
 func (h *Handler) Update(c *gin.Context) {
-	creds := &models.Profile{}
-	if err := c.BindJSON(creds); err != nil {
-		fmt.Println("err", err.Error())
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
+
+	profileName := c.PostForm("name")
+	profileStatus := c.PostForm("status")
+	//profilePhoto := c.PostForm("")
 	user := c.Value("user").(*models.User)
-	err := h.s.Update("", user.Id, creds)
+	creds := &models.Profile{
+		Id:     "",
+		UserId: "",
+		Name:   profileName,
+		Status: profileStatus,
+		Photo:  "",
+	}
+	photoData := storage.FileData{
+		File:        nil,
+		Size:        0,
+		ContentType: "",
+	}
+	photo, err := c.FormFile("photo")
+	if err == nil {
+		file, err := photo.Open()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		fileBytes, err := io.ReadAll(file)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		defer file.Close()
+		photoData.File = bytes.NewReader(fileBytes)
+		photoData.Size = int64(len(fileBytes))
+		photoData.ContentType = photo.Header.Get("Content-Type")
+	}
+	err = h.s.Update(c.Request.Context(), "", user.Id, creds, photoData)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
