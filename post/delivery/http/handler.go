@@ -85,6 +85,16 @@ func (h *Handler) GetByUserId(c *gin.Context) {
 	c.JSON(http.StatusOK, posts)
 }
 
+func (h *Handler) GetAll(c *gin.Context) {
+	var posts []models.Post
+	posts = h.s.GetAll()
+	if len(posts) == 0 {
+		c.JSON(http.StatusOK, nil)
+		return
+	}
+	c.JSON(http.StatusOK, posts)
+}
+
 func (h *Handler) Delete(c *gin.Context) {
 	userId := c.Value("user").(*models.User).Id
 	id := c.Param("id")

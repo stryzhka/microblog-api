@@ -36,6 +36,10 @@ func (s *PostService) GetByUserId(userId string) []models.Post {
 	return s.repo.GetByUserId(userId)
 }
 
+func (s *PostService) GetAll() []models.Post {
+	return s.repo.GetAll()
+}
+
 func (s *PostService) Create(ctx context.Context, content, userId string, photoData storage.FileData) error {
 	id, err := uuid.NewRandom()
 	if strings.TrimSpace(content) == "" {

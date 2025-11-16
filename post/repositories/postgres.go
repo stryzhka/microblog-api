@@ -17,7 +17,7 @@ func NewPostgresRepository(db *sql.DB) *PostgresRepository {
 }
 
 func (r *PostgresRepository) Create(post *models.Post) error {
-	_, err := r.db.Exec(`insert into posts (id, profile_id, content, date, picture_path) values ($1, $2, $3, $4, $5)`, post.Id, post.ProfileId, post.Content, post.DateCreated, post.PicturePath)
+	_, err := r.db.Exec(`insert into posts (id, profile_id, content, date, picture_path, likes_count) values ($1, $2, $3, $4, $5, 0)`, post.Id, post.ProfileId, post.Content, post.DateCreated, post.PicturePath)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
@@ -27,12 +27,13 @@ func (r *PostgresRepository) Create(post *models.Post) error {
 
 func (r *PostgresRepository) GetById(id string) (*models.Post, error) {
 	post := &models.Post{}
-	err := r.db.QueryRow(`select id, profile_id, content, date, likes_count from posts where id = $1`, id).Scan(
+	err := r.db.QueryRow(`select id, profile_id, content, date, likes_count, picture_path from posts where id = $1`, id).Scan(
 		&post.Id,
 		&post.ProfileId,
 		&post.Content,
 		&post.DateCreated,
 		&post.Likes,
+		&post.PicturePath,
 	)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -43,16 +44,35 @@ func (r *PostgresRepository) GetById(id string) (*models.Post, error) {
 	return post, err
 }
 
-func (r *PostgresRepository) GetByUserId(userId string) []models.Post {
+func (r *PostgresRepository) GetAll() []models.Post {
 	var posts []models.Post
-	rows, err := r.db.Query(`select  id, profile_id, content, date, likes_count from posts where profile_id = $1`, userId)
+	rows, err := r.db.Query(`select  id, profile_id, content, date, likes_count, picture_path from posts `)
 	if err != nil {
 		fmt.Println(err.Error())
 		return posts
 	}
 	for rows.Next() {
 		post := &models.Post{}
-		err := rows.Scan(&post.Id, &post.ProfileId, &post.Content, &post.DateCreated, &post.Likes)
+		err := rows.Scan(&post.Id, &post.ProfileId, &post.Content, &post.DateCreated, &post.Likes, &post.PicturePath)
+		if err != nil {
+			fmt.Println(err.Error())
+			return posts
+		}
+		posts = append(posts, *post)
+	}
+	return posts
+}
+
+func (r *PostgresRepository) GetByUserId(userId string) []models.Post {
+	var posts []models.Post
+	rows, err := r.db.Query(`select  id, profile_id, content, date, likes_count, picture_path from posts where profile_id = $1`, userId)
+	if err != nil {
+		fmt.Println(err.Error())
+		return posts
+	}
+	for rows.Next() {
+		post := &models.Post{}
+		err := rows.Scan(&post.Id, &post.ProfileId, &post.Content, &post.DateCreated, &post.Likes, &post.PicturePath)
 		if err != nil {
 			fmt.Println(err.Error())
 			return posts

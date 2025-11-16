@@ -9,6 +9,7 @@ import (
 type Service interface {
 	GetByUserId(userId string) []models.Post
 	GetById(id string) (*models.Post, error)
+	GetAll() []models.Post
 	Delete(userId, id string) error
 	Create(ctx context.Context, content, userId string, photoData storage.FileData) error
 	LikePost(postId, userId string) error

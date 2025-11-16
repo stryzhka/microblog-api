@@ -11,7 +11,7 @@ func RegisterHTTPEndpoints(router *gin.RouterGroup, s post.Service, m gin.Handle
 	{
 		//profileEndpoints.GET("/:id", h.GetById)
 		//profileEndpoints.PUT("/", h.Update)
-		//postEndpoints.GET("/", h.GetAll)
+		postEndpoints.GET("/", h.GetAll)
 		postEndpoints.POST("/", m, h.Create)
 		postEndpoints.GET("/:id", h.GetById)
 		//postEndpoints.DELETE("/:id", h.Delete)
