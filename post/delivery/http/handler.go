@@ -53,6 +53,10 @@ func (h *Handler) Create(c *gin.Context) {
 		photoData.File = bytes.NewReader(fileBytes)
 		photoData.Size = int64(len(fileBytes))
 		photoData.ContentType = photo.Header.Get("Content-Type")
+		if !strings.Contains(photoData.ContentType, "image") {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "file must be image"})
+			return
+		}
 	}
 	err = h.s.Create(c.Request.Context(), postData.Content, c.Value("user").(*models.User).Id, photoData)
 	if err != nil {
