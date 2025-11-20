@@ -62,7 +62,8 @@ func (s *PostService) Create(ctx context.Context, content, userId string, photoD
 		ProfileId:   userId,
 		Content:     content,
 		DateCreated: time.Now().Format(time.RFC3339),
-		Likes:       0,
+		LikesCount:  0,
+		Likes:       nil,
 		PicturePath: photoPath,
 	}
 	return s.repo.Create(post)
