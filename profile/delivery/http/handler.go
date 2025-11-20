@@ -29,12 +29,10 @@ type ProfileData struct {
 // GetById godoc
 // @Summary Get profile by profile id
 // @Tags profile
-// @Security ApiKeyAuth
 // @Produce json
 // @Param id path string true "profile id"
 // @Success 200 {object} ProfileData
 // @Failure 500
-// @Failure 401
 // @Router /api/profile/{id} [get]
 func (h *Handler) GetById(c *gin.Context) {
 	id := c.Param("id")

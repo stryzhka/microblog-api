@@ -19,7 +19,7 @@ services:
       - signing_key=key
       - s3_id=minioadmin
       - s3_secret=minioadmin
-      - s3_conn=0.0.0.0:9000
+      - s3_conn=minio:9000
   db:
     container_name: db
     image: postgres

@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"database/sql"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -59,14 +60,15 @@ func (a *App) Run(port string) error {
 	router.Use(
 		gin.Recovery(),
 		gin.Logger(),
-		/*cors.New(cors.Config{
+		//cors.Default(),
+		cors.New(cors.Config{
 			AllowOrigins:     []string{"*"},
 			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
-			AllowHeaders:     []string{"Origin", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "Accept", "Cache-Control", "X-Requested-With"},
+			AllowHeaders:     []string{"Access-Control-Allow-Origin", "Origin", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "Accept", "Cache-Control", "X-Requested-With"},
 			ExposeHeaders:    []string{"Content-Length", "Content-Type"},
 			AllowCredentials: true,
 			MaxAge:           12 * time.Hour,
-		}),*/
+		}),
 	)
 	m := http2.NewAuthMiddleware(a.authService)
 	apiGroup := router.Group("/api")

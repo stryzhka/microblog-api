@@ -12,7 +12,7 @@ func RegisterHTTPEndpoints(router *gin.RouterGroup, profileService profile.Servi
 	hPost := http.NewHandler(postService)
 	profileEndpoints := router.Group("/profile")
 	{
-		profileEndpoints.GET("/:id", m, h.GetById)
+		profileEndpoints.GET("/:id", h.GetById)
 		profileEndpoints.PUT("/", m, h.Update)
 		profileEndpoints.GET("/", m, h.GetAll)
 		profileEndpoints.GET("/posts/:userId", m, hPost.GetByUserId)
