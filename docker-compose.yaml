@@ -1,5 +1,27 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/go/src/app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - minio
+    networks:
+      - app
+    environment:
+      - port=8080
+      - db_conn=host=db port=5432 user=postgres password=root dbname=app sslmode=disable
+      - password_salt=salt
+      - signing_key=key
+      - s3_id=minioadmin
+      - s3_secret=minioadmin
+      - s3_conn=0.0.0.0:9000
   db:
+    container_name: db
     image: postgres
     restart: always
     environment:

@@ -4,9 +4,21 @@ import (
 	_ "github.com/lib/pq"
 	"log"
 	"microblog-api/config"
+	_ "microblog-api/docs"
 	"microblog-api/server"
 	"os"
 )
+
+// @title Microblog-api
+// @version 1.0
+// @description This is simple microblog api
+
+// @host localhost:8080
+// @BasePath /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 
 func main() {
 	err := config.Init()

@@ -26,6 +26,16 @@ type ProfileData struct {
 	Photo  string `json:"photo"`
 }
 
+// GetById godoc
+// @Summary Get profile by profile id
+// @Tags profile
+// @Security ApiKeyAuth
+// @Produce json
+// @Param id path string true "profile id"
+// @Success 200 {object} ProfileData
+// @Failure 500
+// @Failure 401
+// @Router /api/profile/{id} [get]
 func (h *Handler) GetById(c *gin.Context) {
 	id := c.Param("id")
 	p, err := h.s.GetById(id)
@@ -44,6 +54,14 @@ func (h *Handler) GetById(c *gin.Context) {
 	c.JSON(http.StatusOK, profileData)
 }
 
+// GetAll godoc
+// @Summary Get all profiles
+// @Tags profile
+// @Security ApiKeyAuth
+// @Produce json
+// @Success 200 {array} ProfileData
+// @Failure 401
+// @Router /api/profile/ [get]
 func (h *Handler) GetAll(c *gin.Context) {
 	p := h.s.GetAll()
 	var profileData []ProfileData
@@ -63,6 +81,19 @@ func (h *Handler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, profileData)
 }
 
+// Update godoc
+// @Summary Update profile
+// @Tags profile
+// @Security ApiKeyAuth
+// @Accept mpfd
+// @Produce json
+// @Param name formData string true "profile name"
+// @Param status formData string false "profile status"
+// @Param photo formData file false "photo"
+// @Success 200
+// @Failure 400
+// @Failure 401
+// @Router /api/profile [put]
 func (h *Handler) Update(c *gin.Context) {
 
 	profileName := c.PostForm("name")

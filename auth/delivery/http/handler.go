@@ -19,6 +19,15 @@ type UserCredentials struct {
 	Password string `json:"password"`
 }
 
+// Signup godoc
+// @Summary Sign up user
+// @Tags auth
+// @Accept json
+// @Param creds body UserCredentials required "user credentials"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /auth/signup [post]
 func (h *Handler) Signup(c *gin.Context) {
 	creds := &UserCredentials{}
 	if err := c.BindJSON(creds); err != nil {
@@ -39,6 +48,15 @@ func (h *Handler) Signup(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+// Signin godoc
+// @Summary Sign in user
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param creds body UserCredentials required "user credentials"
+// @Success 200
+// @Failure 400
+// @Router /auth/signin [post]
 func (h *Handler) Signin(c *gin.Context) {
 	creds := &UserCredentials{}
 	if err := c.BindJSON(creds); err != nil {
