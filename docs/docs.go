@@ -305,11 +305,6 @@ const docTemplate = `{
         },
         "/api/profile/{id}": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -333,11 +328,29 @@ const docTemplate = `{
                             "$ref": "#/definitions/http.ProfileData"
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "500": {
                         "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/auth/me": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get user id",
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     }
                 }
             }
@@ -451,6 +464,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "likes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "likesCount": {
                     "type": "integer"
                 },
                 "picturePath": {

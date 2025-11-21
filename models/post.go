@@ -1,12 +1,10 @@
 package models
 
-import "github.com/lib/pq"
-
 type Post struct {
 	Id          string
 	ProfileId   string
 	LikesCount  int
-	Likes       pq.StringArray
+	Likes       []string
 	Content     string
 	PicturePath string
 	DateCreated string

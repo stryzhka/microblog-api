@@ -13,5 +13,6 @@ type UserClaims struct {
 type Service interface {
 	Signup(username, password string) error
 	Signin(username, password string) (string, error)
+	GetUserId(username string) (string, error)
 	ParseToken(accessToken string) (*models.User, error)
 }

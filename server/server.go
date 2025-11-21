@@ -72,7 +72,7 @@ func (a *App) Run(port string) error {
 	)
 	m := http2.NewAuthMiddleware(a.authService)
 	apiGroup := router.Group("/api")
-	http2.RegisterHTTPEndpoints(router, a.authService)
+	http2.RegisterHTTPEndpoints(router, a.authService, m)
 	http3.RegisterHTTPEndpoints(apiGroup, a.profileService, a.postService, m)
 	http4.RegisterHTTPEndpoints(apiGroup, a.postService, m)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

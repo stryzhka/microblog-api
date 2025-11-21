@@ -3,6 +3,7 @@ package http
 import (
 	"github.com/gin-gonic/gin"
 	"microblog-api/auth"
+	"microblog-api/models"
 	"net/http"
 )
 
@@ -71,4 +72,16 @@ func (h *Handler) Signin(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"token": token})
+}
+
+// GetUserId godoc
+// @Summary Get user id
+// @Tags auth
+// @Security ApiKeyAuth
+// @Produce json
+// @Success 200
+// @Router /auth/me [get]
+func (h *Handler) GetUserId(c *gin.Context) {
+	userId := c.Value("user").(*models.User).Id
+	c.JSON(200, gin.H{"id": userId})
 }

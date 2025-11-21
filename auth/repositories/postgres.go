@@ -48,3 +48,15 @@ func (r *PostgresRepository) Get(username, password string) (*models.User, error
 	}
 	return user, err
 }
+
+func (r *PostgresRepository) GetUserId(username string) (string, error) {
+	user := &models.User{}
+	err := r.db.QueryRow(`
+		SELECT id 
+		FROM users 
+		WHERE username = $1 AND`, username).Scan(
+		&user.Id,
+	)
+
+	return user.Id, err
+}

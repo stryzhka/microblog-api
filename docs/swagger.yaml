@@ -27,6 +27,10 @@ definitions:
       id:
         type: string
       likes:
+        items:
+          type: string
+        type: array
+      likesCount:
         type: integer
       picturePath:
         type: string
@@ -210,12 +214,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/http.ProfileData'
-        "401":
-          description: Unauthorized
         "500":
           description: Internal Server Error
-      security:
-      - ApiKeyAuth: []
       summary: Get profile by profile id
       tags:
       - profile
@@ -243,6 +243,18 @@ paths:
       summary: Get posts by profile id
       tags:
       - profile
+  /auth/me:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: Get user id
+      tags:
+      - auth
   /auth/signin:
     post:
       consumes:

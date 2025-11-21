@@ -34,7 +34,7 @@ func (r *PostgresRepository) GetById(id string) (*models.Post, error) {
 		&post.DateCreated,
 		&post.LikesCount,
 		&post.PicturePath,
-		&post.Likes,
+		pq.Array(&post.Likes),
 	)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -54,7 +54,7 @@ func (r *PostgresRepository) GetAll() []models.Post {
 	}
 	for rows.Next() {
 		post := &models.Post{}
-		err := rows.Scan(&post.Id, &post.ProfileId, &post.Content, &post.DateCreated, &post.LikesCount, &post.PicturePath, &post.Likes)
+		err := rows.Scan(&post.Id, &post.ProfileId, &post.Content, &post.DateCreated, &post.LikesCount, &post.PicturePath, pq.Array(&post.Likes))
 		if err != nil {
 			fmt.Println(err.Error())
 			return posts
@@ -73,7 +73,7 @@ func (r *PostgresRepository) GetByUserId(userId string) []models.Post {
 	}
 	for rows.Next() {
 		post := &models.Post{}
-		err := rows.Scan(&post.Id, &post.ProfileId, &post.Content, &post.DateCreated, &post.LikesCount, &post.PicturePath, &post.Likes)
+		err := rows.Scan(&post.Id, &post.ProfileId, &post.Content, &post.DateCreated, &post.LikesCount, &post.PicturePath, pq.Array(&post.Likes))
 		if err != nil {
 			fmt.Println(err.Error())
 			return posts

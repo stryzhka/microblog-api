@@ -66,6 +66,10 @@ func (s *UserService) Signin(username, password string) (string, error) {
 	return util.GenerateToken(user.Id, user.Role, s.signingKey)
 }
 
+func (s *UserService) GetUserId(username string) (string, error) {
+	return s.repo.GetUserId(username)
+}
+
 func (s *UserService) ParseToken(accessToken string) (*models.User, error) {
 	token, err := jwt.ParseWithClaims(accessToken, &auth.UserClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
