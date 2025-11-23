@@ -17,7 +17,7 @@ func NewPostgresRepository(db *sql.DB) *PostgresRepository {
 }
 
 func (r *PostgresRepository) Create(post *models.Post) error {
-	_, err := r.db.Exec(`insert into posts (id, profile_id, content, date, picture_path, likes_count, likes) values ($1, $2, $3, $4, $5, 0, $6)`, post.Id, post.ProfileId, post.Content, post.DateCreated, post.PicturePath, nil)
+	_, err := r.db.Exec(`insert into posts (id, profile_id, content, date, picture_path, likes_count, likes, comments, is_comment) values ($1, $2, $3, $4, $5, 0, $6, $7, false)`, post.Id, post.ProfileId, post.Content, post.DateCreated, post.PicturePath, nil, nil)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
@@ -27,7 +27,7 @@ func (r *PostgresRepository) Create(post *models.Post) error {
 
 func (r *PostgresRepository) GetById(id string) (*models.Post, error) {
 	post := &models.Post{}
-	err := r.db.QueryRow(`select id, profile_id, content, date, likes_count, picture_path , likes from posts where id = $1`, id).Scan(
+	err := r.db.QueryRow(`select id, profile_id, content, date, likes_count, picture_path , likes, comments, is_comment from posts where id = $1`, id).Scan(
 		&post.Id,
 		&post.ProfileId,
 		&post.Content,
@@ -35,6 +35,8 @@ func (r *PostgresRepository) GetById(id string) (*models.Post, error) {
 		&post.LikesCount,
 		&post.PicturePath,
 		pq.Array(&post.Likes),
+		pq.Array(&post.Comments),
+		&post.IsComment,
 	)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -47,14 +49,14 @@ func (r *PostgresRepository) GetById(id string) (*models.Post, error) {
 
 func (r *PostgresRepository) GetAll() []models.Post {
 	var posts []models.Post
-	rows, err := r.db.Query(`select  id, profile_id, content, date, likes_count, picture_path, likes from posts `)
+	rows, err := r.db.Query(`select  id, profile_id, content, date, likes_count, picture_path, likes, comments, is_comment from posts  where is_comment <> true`)
 	if err != nil {
 		fmt.Println(err.Error())
 		return posts
 	}
 	for rows.Next() {
 		post := &models.Post{}
-		err := rows.Scan(&post.Id, &post.ProfileId, &post.Content, &post.DateCreated, &post.LikesCount, &post.PicturePath, pq.Array(&post.Likes))
+		err := rows.Scan(&post.Id, &post.ProfileId, &post.Content, &post.DateCreated, &post.LikesCount, &post.PicturePath, pq.Array(&post.Likes), pq.Array(&post.Comments), &post.IsComment)
 		if err != nil {
 			fmt.Println(err.Error())
 			return posts
@@ -66,14 +68,14 @@ func (r *PostgresRepository) GetAll() []models.Post {
 
 func (r *PostgresRepository) GetByUserId(userId string) []models.Post {
 	var posts []models.Post
-	rows, err := r.db.Query(`select  id, profile_id, content, date, likes_count, picture_path, likes from posts where profile_id = $1`, userId)
+	rows, err := r.db.Query(`select  id, profile_id, content, date, likes_count, picture_path, likes, comments, is_comment from posts where profile_id = $1`, userId)
 	if err != nil {
 		fmt.Println(err.Error())
 		return posts
 	}
 	for rows.Next() {
 		post := &models.Post{}
-		err := rows.Scan(&post.Id, &post.ProfileId, &post.Content, &post.DateCreated, &post.LikesCount, &post.PicturePath, pq.Array(&post.Likes))
+		err := rows.Scan(&post.Id, &post.ProfileId, &post.Content, &post.DateCreated, &post.LikesCount, &post.PicturePath, pq.Array(&post.Likes), pq.Array(&post.Comments), &post.IsComment)
 		if err != nil {
 			fmt.Println(err.Error())
 			return posts
@@ -159,6 +161,30 @@ func (r *PostgresRepository) DislikePost(like *models.Like) error {
 		WHERE id = $1;
 
 	`, like.PostId, like.ProfileId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *PostgresRepository) AddComment(comment *models.Post, commentData *models.CommentData) error {
+
+	_, err := r.db.Exec(`insert into posts (id, profile_id, content, date, picture_path, likes_count, likes, is_comment) values ($1, $2, $3, $4, $5, 0, $6, $7)`, comment.Id, comment.ProfileId, comment.Content, comment.DateCreated, comment.PicturePath, nil, true)
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+	_, err = r.db.Exec(`insert into comments (post_id, comment_id) values ($1, $2)`, commentData.PostId, commentData.CommentId)
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+	_, err = r.db.Exec(`
+		UPDATE posts 
+		SET comments = array_append(comments, $1)
+		WHERE id = $2;
+
+	`, commentData.CommentId, commentData.PostId)
 	if err != nil {
 		return err
 	}

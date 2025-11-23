@@ -10,4 +10,5 @@ type Repository interface {
 	Create(post *models.Post) error
 	LikePost(like *models.Like) error
 	DislikePost(like *models.Like) error
+	AddComment(comment *models.Post, commentData *models.CommentData) error
 }

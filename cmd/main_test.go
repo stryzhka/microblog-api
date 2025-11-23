@@ -449,3 +449,53 @@ func TestSignup(t *testing.T) {
 //	fmt.Println(w.Body)
 //	assert.Equal(t, http.StatusOK, w.Code)
 //}
+
+//func TestAddComment(t *testing.T) {
+//		db, err := sql.Open("postgres", "host=localhost port=5435 user=postgres password=root dbname=blog sslmode=disable")
+//		assert.NoError(t, err)
+//		endpoint := os.Getenv("s3_conn")
+//		client, _ := minio.New(endpoint, &minio.Options{
+//			Creds:  credentials.NewStaticV4(os.Getenv("s3_id"), os.Getenv("s3_secret"), ""),
+//			Secure: false,
+//		})
+//		storage := minio2.NewMinioStorage(client, "app")
+//		userRepo := repositories.NewPostgresRepository(db)
+//		profileRepo := repositories2.NewPostgresRepository(db)
+//		profileService := services2.NewProfileService(profileRepo, storage)
+//		postRepo := repositories3.NewPostgresRepository(db)
+//		postService := services3.NewPostService(postRepo, storage)
+//		userService := services.NewUserService(userRepo, profileService, "salt", "key", 10000)
+//		postService.AddComment(ctx)
+//	r := gin.Default()
+//	middleware := delivery.NewAuthMiddleware(userService)
+//
+//	delivery.RegisterHTTPEndpoints(r, userService)
+//	api := r.Group("/api")
+//	http3.RegisterHTTPEndpoints(api, postService, middleware)
+//	http4.RegisterHTTPEndpoints(api, profileService, postService, middleware)
+//	creds := &delivery.UserCredentials{
+//		Username: "666",
+//		Password: "password",
+//	}
+//	body, err := json.Marshal(creds)
+//	req, _ := http.NewRequest("POST", "/auth/signin", bytes.NewBuffer(body))
+//	req.Header.Set("Content-Type", "application/json")
+//	w := httptest.NewRecorder()
+//	r.ServeHTTP(w, req)
+//	assert.Equal(t, http.StatusOK, w.Code)
+//	body, _ = io.ReadAll(w.Body)
+//	type token struct {
+//		Token string `json:"token"`
+//	}
+//	tok := &token{}
+//	_ = json.Unmarshal(body, tok)
+//	postData := http3.PostData{}
+//	body, _ = json.Marshal(postData)
+//	req, _ = http.NewRequest("POST", "/api/post/", bytes.NewBuffer(body))
+//	//fmt.Println(tok.Token)
+//	req.Header.Set("Authorization", "Bearer "+tok.Token)
+//	w = httptest.NewRecorder()
+//	r.ServeHTTP(w, req)
+//	fmt.Println(w.Body)
+//	assert.Equal(t, http.StatusOK, w.Code)
+//}

@@ -27,6 +27,6 @@ func (s *MinioStorage) UploadFile(ctx context.Context, file io.Reader, contentTy
 }
 
 func (s *MinioStorage) GetFileURL(ctx context.Context, filename string) (string, error) {
-	presignedURL := fmt.Sprintf("http://localhost:9000/app/%s", filename)
+	presignedURL := fmt.Sprintf("/files/app/%s", filename)
 	return presignedURL, nil
 }

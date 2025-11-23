@@ -20,12 +20,18 @@ definitions:
     type: object
   models.Post:
     properties:
+      comments:
+        items:
+          type: string
+        type: array
       content:
         type: string
       dateCreated:
         type: string
       id:
         type: string
+      isComment:
+        type: boolean
       likes:
         items:
           type: string
@@ -147,6 +153,39 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Like post by post id
+      tags:
+      - post
+  /api/post/comment/{postId}:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: post id
+        in: path
+        name: postId
+        required: true
+        type: string
+      - description: comment content
+        in: formData
+        name: content
+        required: true
+        type: string
+      - description: photo
+        in: formData
+        name: photo
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+      security:
+      - ApiKeyAuth: []
+      summary: Add comment to post
       tags:
       - post
   /api/profile:

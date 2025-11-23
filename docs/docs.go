@@ -82,6 +82,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/post/comment/{postId}": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "post"
+                ],
+                "summary": "Add comment to post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "post id",
+                        "name": "postId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "comment content",
+                        "name": "content",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "photo",
+                        "name": "photo",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
         "/api/post/{id}": {
             "get": {
                 "produces": [
@@ -454,6 +506,12 @@ const docTemplate = `{
         "models.Post": {
             "type": "object",
             "properties": {
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "content": {
                     "type": "string"
                 },
@@ -462,6 +520,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
+                },
+                "isComment": {
+                    "type": "boolean"
                 },
                 "likes": {
                     "type": "array",

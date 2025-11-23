@@ -44,6 +44,9 @@ CREATE TABLE IF NOT EXISTS public.posts
     date timestamp with time zone NOT NULL,
     likes_count integer,
     picture_path text COLLATE pg_catalog."default",
+    likes text[],
+    comments text[],
+    is_comment bool,
     CONSTRAINT posts_pkey PRIMARY KEY (id)
 );
 
@@ -61,6 +64,13 @@ CREATE TABLE IF NOT EXISTS public.likes
     profile_id text COLLATE pg_catalog."default" NOT NULL,
     post_id text COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT unique_like UNIQUE (profile_id, post_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.comments
+(
+    post_id text COLLATE pg_catalog."default" NOT NULL,
+    comment_id text COLLATE pg_catalog."default" NOT NULL,
+--     CONSTRAINT unique_like UNIQUE (profile_id, post_id)
 );
 
 

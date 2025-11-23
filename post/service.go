@@ -14,4 +14,5 @@ type Service interface {
 	Create(ctx context.Context, content, userId string, photoData storage.FileData) error
 	LikePost(postId, userId string) error
 	DislikePost(postId, userId string) error
+	AddComment(ctx context.Context, postId, userId, content string, photoData storage.FileData) error
 }

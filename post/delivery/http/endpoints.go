@@ -17,5 +17,6 @@ func RegisterHTTPEndpoints(router *gin.RouterGroup, s post.Service, m gin.Handle
 		//postEndpoints.DELETE("/:id", h.Delete)
 		postEndpoints.POST("/:postId", m, h.LikePost)
 		postEndpoints.DELETE("/:postId", m, h.DislikePost)
+		postEndpoints.POST("/comment/:postId", m, h.AddComment)
 	}
 }

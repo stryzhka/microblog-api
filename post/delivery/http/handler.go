@@ -201,3 +201,65 @@ func (h *Handler) DislikePost(c *gin.Context) {
 	}
 	c.Status(http.StatusOK)
 }
+
+// AddComment godoc
+// @Summary Add comment to post
+// @Tags post
+// @Security ApiKeyAuth
+// @Accept mpfd
+// @Produce json
+// @Param postId path string true "post id"
+// @Param content formData string true "comment content"
+// @Param photo formData file false "photo"
+// @Success 200
+// @Failure 400
+// @Failure 401
+// @Router /api/post/comment/{postId} [post]
+func (h *Handler) AddComment(c *gin.Context) {
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 20<<20)
+	postId := c.Param("postId")
+	var req CreatePostRequest
+	if err := c.ShouldBind(&req); err != nil {
+		if strings.Contains(err.Error(), "http: request body too large") {
+			c.JSON(http.StatusRequestEntityTooLarge, gin.H{"error": "file too large"})
+			return
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid form data"})
+		return
+	}
+	postData := &PostData{Content: req.Content}
+	photoData := storage.FileData{
+		File:        nil,
+		Size:        0,
+		ContentType: "",
+	}
+	photo := req.Photo
+	if photo != nil {
+		file, err := photo.Open()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		fileBytes, err := io.ReadAll(file)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		defer file.Close()
+		photoData.ContentType = photo.Header.Get("Content-Type")
+		fmt.Println(photoData.ContentType)
+		photoData.File = bytes.NewReader(fileBytes)
+		photoData.Size = int64(len(fileBytes))
+		if !strings.Contains(photoData.ContentType, "image") {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "file must be image"})
+			return
+		}
+
+	}
+	err := h.s.AddComment(c.Request.Context(), postId, c.Value("user").(*models.User).Id, postData.Content, photoData)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.Status(http.StatusOK)
+}
