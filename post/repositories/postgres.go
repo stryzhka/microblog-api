@@ -49,7 +49,12 @@ func (r *PostgresRepository) GetById(id string) (*models.Post, error) {
 
 func (r *PostgresRepository) GetAll() []models.Post {
 	var posts []models.Post
-	rows, err := r.db.Query(`select  id, profile_id, content, date, likes_count, picture_path, likes, comments, is_comment from posts  where is_comment <> true`)
+	rows, err := r.db.Query(`SELECT id, profile_id, content, date, likes_count, picture_path, likes, comments, is_comment 
+FROM posts  
+WHERE is_comment <> true 
+ORDER BY 
+    (1 / (EXTRACT(EPOCH FROM (NOW() - date)) / 3600 + 1)) * 0.3 + 
+    COALESCE(array_length(comments, 1), 0) * 0.7 DESC`)
 	if err != nil {
 		fmt.Println(err.Error())
 		return posts

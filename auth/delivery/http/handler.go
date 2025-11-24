@@ -41,8 +41,8 @@ func (h *Handler) Signup(c *gin.Context) {
 	} else if err == auth.ErrValidation {
 		c.AbortWithStatus(http.StatusBadRequest)
 	} else if err != nil {
-		c.AbortWithStatus(http.StatusInternalServerError)
-		//c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		//c.AbortWithStatus(http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
