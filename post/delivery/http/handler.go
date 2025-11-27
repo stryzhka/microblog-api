@@ -12,6 +12,7 @@ import (
 	"microblog-api/storage"
 	"mime/multipart"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -158,6 +159,44 @@ func (h *Handler) Delete(c *gin.Context) {
 		return
 	}
 	c.Status(http.StatusOK)
+}
+
+// GetAllPaged godoc
+// @Summary Get all posts paginated LOL
+// @Tags post
+// @Produce json
+// @Success 200 {array} models.Post
+// @Param count query int true "posts limit"
+// @Param date query string true "last date"
+// @Router /api/post/paged/ [get]
+func (h *Handler) GetAllPaged(c *gin.Context) {
+	var posts []models.Post
+	count, _ := strconv.Atoi(c.Request.URL.Query().Get("count"))
+	date := c.Request.URL.Query().Get("date")
+	posts = h.s.GetAllPaged(count, date)
+	if len(posts) == 0 {
+		c.JSON(http.StatusOK, nil)
+		return
+	}
+	c.JSON(http.StatusOK, posts)
+}
+
+// GetAllCommentsById godoc
+// @Summary Get all comments of post by post id
+// @Tags post
+// @Produce json
+// @Success 200 {array} models.Post
+// @Param postId path string true "post id"
+// @Router /api/post/comments/{postId} [get]
+func (h *Handler) GetAllCommentsById(c *gin.Context) {
+	postId := c.Param("postId")
+
+	posts := h.s.GetAllCommentsById(postId)
+	if len(posts) == 0 {
+		c.JSON(http.StatusOK, gin.H{})
+		return
+	}
+	c.JSON(http.StatusOK, posts)
 }
 
 // LikePost godoc

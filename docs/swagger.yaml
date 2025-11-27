@@ -188,6 +188,51 @@ paths:
       summary: Add comment to post
       tags:
       - post
+  /api/post/comments/{postId}:
+    get:
+      parameters:
+      - description: post id
+        in: path
+        name: postId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+      summary: Get all comments of post by post id
+      tags:
+      - post
+  /api/post/paged/:
+    get:
+      parameters:
+      - description: posts limit
+        in: query
+        name: count
+        required: true
+        type: integer
+      - description: last date
+        in: query
+        name: date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+      summary: Get all posts paginated LOL
+      tags:
+      - post
   /api/profile:
     put:
       consumes:

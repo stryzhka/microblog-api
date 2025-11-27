@@ -11,4 +11,6 @@ type Repository interface {
 	LikePost(like *models.Like) error
 	DislikePost(like *models.Like) error
 	AddComment(comment *models.Post, commentData *models.CommentData) error
+	GetAllCommentsById(postId string) []models.Post
+	GetAllPaged(count int, lastDate string) []models.Post
 }

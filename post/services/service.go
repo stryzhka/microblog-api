@@ -120,3 +120,11 @@ func (s *PostService) AddComment(ctx context.Context, postId, userId, content st
 	}
 	return s.repo.AddComment(comment, commentData)
 }
+
+func (s *PostService) GetAllCommentsById(postId string) []models.Post {
+	return s.repo.GetAllCommentsById(postId)
+}
+
+func (s *PostService) GetAllPaged(count int, lastDate string) []models.Post {
+	return s.repo.GetAllPaged(count, lastDate)
+}

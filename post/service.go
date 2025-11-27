@@ -15,4 +15,6 @@ type Service interface {
 	LikePost(postId, userId string) error
 	DislikePost(postId, userId string) error
 	AddComment(ctx context.Context, postId, userId, content string, photoData storage.FileData) error
+	GetAllCommentsById(postId string) []models.Post
+	GetAllPaged(count int, lastDate string) []models.Post
 }

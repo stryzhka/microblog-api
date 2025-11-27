@@ -195,3 +195,59 @@ func (r *PostgresRepository) AddComment(comment *models.Post, commentData *model
 	}
 	return nil
 }
+
+func (r *PostgresRepository) GetAllCommentsById(postId string) []models.Post {
+	var posts []models.Post
+	rows, err := r.db.Query(`SELECT * 
+FROM posts 
+WHERE id = ANY(
+    SELECT unnest(comments) 
+    FROM posts 
+    WHERE id = $1
+);`, postId)
+	if err != nil {
+		fmt.Println(err.Error())
+		return posts
+	}
+	for rows.Next() {
+		post := &models.Post{}
+		err := rows.Scan(&post.Id, &post.ProfileId, &post.Content, &post.DateCreated, &post.LikesCount, &post.PicturePath, pq.Array(&post.Likes), &post.IsComment, pq.Array(&post.Comments))
+		if err != nil {
+			fmt.Println(err.Error())
+			return posts
+		}
+		posts = append(posts, *post)
+	}
+	return posts
+}
+
+func (r *PostgresRepository) GetAllPaged(count int, lastDate string) []models.Post {
+	var posts []models.Post
+
+	rows, err := r.db.Query(`WITH ranked_posts AS (
+    SELECT *,
+        (1 / (EXTRACT(EPOCH FROM (NOW() - date)) / 3600 + 1)) * 0.3 + 
+        COALESCE(array_length(comments, 1), 0) * 0.7 as score
+    FROM posts  
+    WHERE is_comment <> true 
+)
+SELECT id, profile_id, content, date, likes_count, picture_path, likes, comments, is_comment
+FROM ranked_posts
+WHERE date < $1
+ORDER BY date DESC, id DESC
+LIMIT $2;`, lastDate, count)
+	if err != nil {
+		fmt.Println(err.Error())
+		return posts
+	}
+	for rows.Next() {
+		post := &models.Post{}
+		err := rows.Scan(&post.Id, &post.ProfileId, &post.Content, &post.DateCreated, &post.LikesCount, &post.PicturePath, pq.Array(&post.Likes), pq.Array(&post.Comments), &post.IsComment)
+		if err != nil {
+			fmt.Println(err.Error())
+			return posts
+		}
+		posts = append(posts, *post)
+	}
+	return posts
+}
