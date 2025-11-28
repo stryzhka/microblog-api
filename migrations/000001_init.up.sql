@@ -69,8 +69,7 @@ CREATE TABLE IF NOT EXISTS public.likes
 CREATE TABLE IF NOT EXISTS public.comments
 (
     post_id text COLLATE pg_catalog."default" NOT NULL,
-    comment_id text COLLATE pg_catalog."default" NOT NULL,
---     CONSTRAINT unique_like UNIQUE (profile_id, post_id)
+    comment_id text COLLATE pg_catalog."default" NOT NULL
 );
 
 
