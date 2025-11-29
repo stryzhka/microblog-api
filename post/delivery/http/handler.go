@@ -128,7 +128,7 @@ func (h *Handler) GetByUserId(c *gin.Context) {
 	var posts []models.Post
 	posts = h.s.GetByUserId(userId)
 	if len(posts) == 0 {
-		c.JSON(http.StatusOK, nil)
+		c.JSON(http.StatusOK, []models.Post{})
 		return
 	}
 	c.JSON(http.StatusOK, posts)
@@ -144,7 +144,7 @@ func (h *Handler) GetAll(c *gin.Context) {
 	var posts []models.Post
 	posts = h.s.GetAll()
 	if len(posts) == 0 {
-		c.JSON(http.StatusOK, nil)
+		c.JSON(http.StatusOK, []models.Post{})
 		return
 	}
 	c.JSON(http.StatusOK, posts)
@@ -175,7 +175,7 @@ func (h *Handler) GetAllPaged(c *gin.Context) {
 	date := c.Request.URL.Query().Get("date")
 	posts = h.s.GetAllPaged(count, date)
 	if len(posts) == 0 {
-		c.JSON(http.StatusOK, nil)
+		c.JSON(http.StatusOK, []models.Post{})
 		return
 	}
 	c.JSON(http.StatusOK, posts)

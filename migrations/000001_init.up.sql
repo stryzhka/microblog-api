@@ -45,8 +45,8 @@ CREATE TABLE IF NOT EXISTS public.posts
     likes_count integer,
     picture_path text COLLATE pg_catalog."default",
     likes text[],
-    comments text[],
     is_comment bool,
+    comments text[] DEFAULT '{}',
     CONSTRAINT posts_pkey PRIMARY KEY (id)
 );
 

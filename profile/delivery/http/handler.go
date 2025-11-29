@@ -64,7 +64,7 @@ func (h *Handler) GetAll(c *gin.Context) {
 	p := h.s.GetAll()
 	var profileData []ProfileData
 	if len(p) == 0 {
-		c.JSON(http.StatusOK, nil)
+		c.JSON(http.StatusOK, []ProfileData{})
 		return
 	}
 	for _, profile := range p {

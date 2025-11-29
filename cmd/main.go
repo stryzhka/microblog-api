@@ -11,9 +11,9 @@ import (
 
 // @title Microblog-api
 // @version 1.0
-// @description This is simple microblog api
+// @description This is simple microblog api LOL
 
-// @host localhost:8080
+//-- @host localhost:8080
 // @BasePath /
 
 // @securityDefinitions.apikey ApiKeyAuth

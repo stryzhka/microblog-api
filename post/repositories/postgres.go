@@ -174,7 +174,12 @@ func (r *PostgresRepository) DislikePost(like *models.Like) error {
 
 func (r *PostgresRepository) AddComment(comment *models.Post, commentData *models.CommentData) error {
 
-	_, err := r.db.Exec(`insert into posts (id, profile_id, content, date, picture_path, likes_count, likes, is_comment) values ($1, $2, $3, $4, $5, 0, $6, $7)`, comment.Id, comment.ProfileId, comment.Content, comment.DateCreated, comment.PicturePath, nil, true)
+	_, err := r.db.Exec(`
+        INSERT INTO posts 
+        (id, profile_id, content, date, likes_count, picture_path, likes, is_comment, comments) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    `, comment.Id, comment.ProfileId, comment.Content, comment.DateCreated,
+		0, comment.PicturePath, "{}", true, "{}")
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
