@@ -38,7 +38,7 @@ func NewUserService(
 
 func (s *UserService) Signup(username, password string) error {
 	valid := regexp.MustCompile("^[a-zA-Z0-9]+$")
-	if !valid.MatchString(username) || strings.TrimSpace(password) == "" {
+	if !valid.MatchString(username) || strings.TrimSpace(password) == "" || len(username) > 20 || len(password) > 20 {
 		return auth.ErrValidation
 	}
 	id, err := uuid.NewRandom()

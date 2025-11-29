@@ -45,6 +45,9 @@ func (s *PostService) Create(ctx context.Context, content, userId string, photoD
 	if strings.TrimSpace(content) == "" {
 		return auth.ErrValidation
 	}
+	if len(content) > 250 {
+		return auth.ErrValidation
+	}
 	if err != nil {
 		return err
 	}
@@ -89,6 +92,9 @@ func (s *PostService) DislikePost(postId, userId string) error {
 func (s *PostService) AddComment(ctx context.Context, postId, userId, content string, photoData storage.FileData) error {
 	id, err := uuid.NewRandom()
 	if strings.TrimSpace(content) == "" {
+		return auth.ErrValidation
+	}
+	if len(content) > 250 {
 		return auth.ErrValidation
 	}
 	if err != nil {

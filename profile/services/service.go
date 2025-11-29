@@ -47,7 +47,12 @@ func (s *ProfileService) Update(ctx context.Context, id, userId string, newProfi
 	if strings.TrimSpace(newProfile.Name) == "" {
 		return auth.ErrValidation
 	}
-
+	if len(newProfile.Name) > 30 {
+		return auth.ErrValidation
+	}
+	if len(newProfile.Status) > 30 {
+		return auth.ErrValidation
+	}
 	photoPath := ""
 	if photoData.File != nil {
 		filename := fmt.Sprintf("profiles/%d_%s", time.Now().UnixNano(), userId)
